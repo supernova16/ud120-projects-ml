@@ -23,7 +23,7 @@ from parse_out_email_text import parseOutText
 """
 
 
-from_sara  = open("from_sara.txt", "r")
+from_sara  = open("from_sara.txt", "r") # 记录了来自 sara 的邮件的路径
 from_chris = open("from_chris.txt", "r")
 
 from_data = []
@@ -34,42 +34,60 @@ word_data = []
 ### can take a long time
 ### temp_counter helps you only look at the first 200 emails in the list so you
 ### can iterate your modifications quicker
-temp_counter = 0
+
+#temp_counter = 0
 
 
 for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
     for path in from_person:
         ### only look at first 200 emails when developing
         ### once everything is working, remove this line to run over full dataset
-        temp_counter += 1
-        if temp_counter < 200:
-            path = os.path.join('..', path[:-1])
-            print path
+
+        #temp_counter += 1
+        #if temp_counter < 200:
+            #print('1path=',path)
+
+            path = os.path.join('..', path[:-1]) #/maildir/bailey-s/deleted_items/101.\n
+            #print (path)
             email = open(path, "r")
 
             ### use parseOutText to extract the text from the opened email
+            text_string = parseOutText(email)
 
             ### use str.replace() to remove any instances of the words
             ### ["sara", "shackleton", "chris", "germani"]
+            signature = ["sara", "shackleton", "chris", "germani", 'sshacklensf','cgermannsf']
+            for entry in signature:
+                text_string = text_string.replace(entry, "")
 
             ### append the text to word_data
+            word_data.append(text_string)
 
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-
+            if name == "sara":
+                from_data.append(0)
+            if name == "chris":
+                from_data.append(1)
 
             email.close()
 
-print "emails processed"
+print("emails processed")
 from_sara.close()
 from_chris.close()
 
-pickle.dump( word_data, open("your_word_data.pkl", "w") )
-pickle.dump( from_data, open("your_email_authors.pkl", "w") )
+pickle.dump( word_data, open("your_word_data.pkl", "wb") ) #将对象持久化，写入到文件中
+pickle.dump( from_data, open("your_email_authors.pkl", "wb") )
 
+print(word_data[152])
+print(from_data[:20])
 
 
 
 
 ### in Part 4, do TfIdf vectorization here
 
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer(stop_words='english')
+tfidf = vectorizer.fit_transform(word_data)
+print (len(vectorizer.get_feature_names())) # get_feature_names() 访问单词和特征数字之间的映射，该函数返回一个包含词汇表所有单词的列表
+print (vectorizer.get_feature_names()[34597])

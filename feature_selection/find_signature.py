@@ -10,8 +10,8 @@ numpy.random.seed(42)
 ### mini-project.
 words_file = "../text_learning/your_word_data.pkl" 
 authors_file = "../text_learning/your_email_authors.pkl"
-word_data = pickle.load( open(words_file, "r"))
-authors = pickle.load( open(authors_file, "r") )
+word_data = pickle.load( open(words_file, "rb"))
+authors = pickle.load( open(authors_file, "rb") )
 
 
 
@@ -29,15 +29,43 @@ features_train = vectorizer.fit_transform(features_train)
 features_test  = vectorizer.transform(features_test).toarray()
 
 
+
 ### a classic way to overfit is to use a small number
 ### of data points and a large number of features;
 ### train on only 150 events to put ourselves in this regime
-features_train = features_train[:150].toarray()
+features_train = features_train[:150] .toarray()
 labels_train   = labels_train[:150]
 
 
 
+
 ### your code goes here
+from sklearn.tree import  DecisionTreeClassifier
+
+clf = DecisionTreeClassifier()
+clf.fit(features_train,labels_train)
+
+score = clf.score(features_test,labels_test)
+
+print(score)
+
+
+feature_importances = clf.feature_importances_
+
+large_feature_importances = []
+
+for index in range(0,len(feature_importances)):
+
+    if feature_importances[index] > 0.2:
+
+        large_feature_importances.append(feature_importances[index])
+        print(index,large_feature_importances)
+        print(vectorizer.get_feature_names()[index])
+
+
+#vectorizer_lst = vectorizer.get_feature_names()
+
+#print(vectorizer_lst[33614])
 
 
 
